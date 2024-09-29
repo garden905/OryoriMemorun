@@ -1,25 +1,31 @@
 class Recipe {
-  final int? id;
-  final String name;
-  final String photo; // photoフィールドを追加
+  int id;
+  String name;
+  String photo;
+  String description;
 
-  Recipe({this.id, required this.name, required this.photo});
+  Recipe({
+    required this.id,
+    required this.name,
+    required this.photo,
+    required this.description,
+  });
 
-  // データベースに保存するためにMapに変換
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'name': name,
-      'photo': photo, // photoを追加
+      'photo': photo,
+      'description': description,
     };
   }
 
-  // データベースから読み込むためにMapから変換
-  factory Recipe.fromMap(Map<String, dynamic> map) {
+  static Recipe fromMap(Map<String, dynamic> map) {
     return Recipe(
       id: map['id'],
       name: map['name'],
-      photo: map['photo'], // photoを追加
+      photo: map['photo'],
+      description: map['description'],
     );
   }
 }

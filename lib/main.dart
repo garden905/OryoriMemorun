@@ -3,6 +3,7 @@ import 'recipe.dart';
 import 'database_helper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'recipe_detail_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -102,39 +103,61 @@ class RecipeListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('レシピ一覧'),
-      ),
-      body: ListView.builder(
-        itemCount: recipes.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(recipes[index].name),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => RecipeInputPage()),
-          );
+        appBar: AppBar(
+          title: Text('レシピ一覧'),
+        ),
+        body: ListView.builder(
+          itemCount: recipes.length,
+          itemBuilder: (context, index) {
+            final recipe = recipes[index];
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RecipeDetailPage(recipe: recipe),
+                  ),
+                );
+              },
+              child: ListTile(
+                title: Text(recipe.name),
+              ),
+            );
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const RecipeInputPage()),
+            );
 
-          if (result != null) {
-            final newRecipe =
-                Recipe(name: result['title'], photo: result['photo']);
-            final dbHelper = DatabaseHelper();
-            await dbHelper.insertRecipe(newRecipe);
-            onAdd(newRecipe);
-          }
-        },
-        child: Icon(Icons.add),
-      ),
-    );
+            if (result != null &&
+                result['title'] != null &&
+                result['photo'] != null &&
+                result['description'] != null) {
+              final newRecipe = Recipe(
+                id: DateTime.now().millisecondsSinceEpoch, // int型のIDを使用
+                name: result['title'],
+                photo: result['photo'],
+                description: result['description'],
+              );
+              final dbHelper = DatabaseHelper();
+              await dbHelper.insertRecipe(newRecipe);
+              onAdd(newRecipe);
+            } else {
+              // ロギングフレームワークを使用
+              debugPrint('タイトルや写真がnullのため、投稿できません');
+            }
+          },
+          child: const Icon(Icons.add),
+        ));
   }
 }
 
 class RecipeInputPage extends StatefulWidget {
+  const RecipeInputPage({Key? key}) : super(key: key); // keyパラメータを追加
+
   @override
   _RecipeInputPageState createState() => _RecipeInputPageState();
 }
@@ -143,7 +166,7 @@ class _RecipeInputPageState extends State<RecipeInputPage> {
   final _formKey = GlobalKey<FormState>();
   String _recipeTitle = '';
   File? _recipePhoto; // File型に変更
-
+  String _recipeDiscription = '';
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickImage() async {
@@ -182,12 +205,21 @@ class _RecipeInputPageState extends State<RecipeInputPage> {
                 child: Text('写真を選択'),
               ),
               SizedBox(height: 20),
+              TextFormField(
+                decoration: InputDecoration(labelText: 'レシピの説明'),
+                onSaved: (value) {
+                  _recipeDiscription = value!;
+                },
+              ),
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-                    Navigator.pop(context,
-                        {'title': _recipeTitle, 'photo': _recipePhoto?.path});
+                    Navigator.pop(context, {
+                      'title': _recipeTitle,
+                      'photo': _recipePhoto?.path,
+                      'description': _recipeDiscription,
+                    });
                   }
                 },
                 child: Text('投稿'),

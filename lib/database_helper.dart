@@ -11,6 +11,7 @@ class DatabaseHelper {
   static final columnId = 'id';
   static final columnName = 'name';
   static final columnPhoto = 'photo'; // photoカラムを追加
+  static final columnDescription = 'description';
 
   // 無名コンストラクタの追加
   DatabaseHelper();
@@ -34,13 +35,11 @@ class DatabaseHelper {
   }
 
   Future _onCreate(Database db, int version) async {
-    await db.execute('''
-      CREATE TABLE $table (
-        $columnId INTEGER PRIMARY KEY,
-        $columnName TEXT NOT NULL,
-        $columnPhoto TEXT NOT NULL
-      )
-    ''');
+    await db.execute("CREATE TABLE $table ("
+        "$columnId INTEGER PRIMARY KEY, "
+        "$columnName TEXT NOT NULL, "
+        "$columnPhoto TEXT NOT NULL, "
+        "$columnDescription TEXT NOT NULL)");
   }
 
   Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -53,7 +52,8 @@ class DatabaseHelper {
 
   Future<int> insertRecipe(Recipe recipe) async {
     Database db = await database;
-    return await db.insert(table, recipe.toMap());
+    return await db.insert(table, recipe.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<List<Recipe>> queryAllRecipes() async {
@@ -68,5 +68,10 @@ class DatabaseHelper {
     Database db = await database;
     return await db.update(table, recipe.toMap(),
         where: '$columnId = ?', whereArgs: [recipe.id]);
+  }
+
+  Future<void> clearTable() async {
+    final db = await database;
+    await db.execute('DELETE FROM example');
   }
 }
