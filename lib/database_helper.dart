@@ -38,14 +38,14 @@ class DatabaseHelper {
     await db.execute("CREATE TABLE $table ("
         "$columnId INTEGER PRIMARY KEY, "
         "$columnName TEXT NOT NULL, "
-        "$columnPhoto TEXT NOT NULL, "
+        "$columnPhoto BLOB NOT NULL, "
         "$columnDescription TEXT NOT NULL)");
   }
 
   Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 2) {
       await db.execute('''
-        ALTER TABLE $table ADD COLUMN $columnPhoto TEXT NOT NULL DEFAULT ''
+        ALTER TABLE $table ADD COLUMN $columnPhoto BLOB NOT NULL DEFAULT ''
       ''');
     }
   }

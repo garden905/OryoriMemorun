@@ -4,6 +4,7 @@ import 'database_helper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'recipe_detail_page.dart';
+import 'package:path_provider/path_provider.dart';
 
 void main() {
   runApp(MyApp());
