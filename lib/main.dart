@@ -4,7 +4,6 @@ import 'database_helper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'recipe_detail_page.dart';
-import 'package:path_provider/path_provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -54,6 +53,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void deleteRecipe(int id) {
+    setState(() {
+      _recipes.removeWhere((recipe) => recipe.id == id);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,7 +66,8 @@ class _MyHomePageState extends State<MyHomePage> {
         index: _selectedIndex,
         children: [
           HomePage(),
-          RecipeListPage(recipes: _recipes, onAdd: _addRecipe),
+          RecipeListPage(
+              recipes: _recipes, onAdd: _addRecipe, onDelete: deleteRecipe),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -97,8 +103,13 @@ class HomePage extends StatelessWidget {
 class RecipeListPage extends StatelessWidget {
   final List<Recipe> recipes;
   final Function(Recipe) onAdd;
+  final Function(int) onDelete;
 
-  const RecipeListPage({Key? key, required this.recipes, required this.onAdd})
+  const RecipeListPage(
+      {Key? key,
+      required this.recipes,
+      required this.onAdd,
+      required this.onDelete})
       : super(key: key);
 
   @override
@@ -122,6 +133,12 @@ class RecipeListPage extends StatelessWidget {
               },
               child: ListTile(
                 title: Text(recipe.name),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () {
+                    onDelete(recipe.id);
+                  },
+                ),
               ),
             );
           },
@@ -187,45 +204,47 @@ class _RecipeInputPageState extends State<RecipeInputPage> {
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: <Widget>[
-              TextFormField(
-                decoration: InputDecoration(labelText: 'レシピタイトル'),
-                onSaved: (value) {
-                  _recipeTitle = value!;
-                },
-              ),
-              SizedBox(height: 20),
-              _recipePhoto == null
-                  ? Text('写真が選択されていません')
-                  : Image.file(_recipePhoto!),
-              ElevatedButton(
-                onPressed: _pickImage,
-                child: Text('写真を選択'),
-              ),
-              SizedBox(height: 20),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'レシピの説明'),
-                onSaved: (value) {
-                  _recipeDiscription = value!;
-                },
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    Navigator.pop(context, {
-                      'title': _recipeTitle,
-                      'photo': _recipePhoto?.path,
-                      'description': _recipeDiscription,
-                    });
-                  }
-                },
-                child: Text('投稿'),
-              ),
-            ],
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                TextFormField(
+                  decoration: InputDecoration(labelText: 'レシピタイトル'),
+                  onSaved: (value) {
+                    _recipeTitle = value!;
+                  },
+                ),
+                SizedBox(height: 20),
+                _recipePhoto == null
+                    ? Text('写真が選択されていません')
+                    : Image.file(_recipePhoto!),
+                ElevatedButton(
+                  onPressed: _pickImage,
+                  child: Text('写真を選択'),
+                ),
+                SizedBox(height: 20),
+                TextFormField(
+                  decoration: InputDecoration(labelText: 'レシピの説明'),
+                  onSaved: (value) {
+                    _recipeDiscription = value!;
+                  },
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
+                      Navigator.pop(context, {
+                        'title': _recipeTitle,
+                        'photo': _recipePhoto?.path,
+                        'description': _recipeDiscription,
+                      });
+                    }
+                  },
+                  child: Text('投稿'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
