@@ -3,6 +3,7 @@ import 'recipe.dart';
 import 'recipe_detail_page.dart';
 import 'database_helper.dart';
 import 'recipe_input_page.dart';
+import 'dart:io'; // Fileクラスをインポート
 
 class RecipeListPage extends StatelessWidget {
   final List<Recipe> recipes;
@@ -37,7 +38,8 @@ class RecipeListPage extends StatelessWidget {
               },
               child: ListTile(
                 title: Text(recipe.name),
-                trailing: IconButton(
+                trailing: Image.file(File(recipe.photo)),
+                leading: IconButton(
                   icon: const Icon(Icons.delete),
                   onPressed: () {
                     onDelete(recipe.id);
