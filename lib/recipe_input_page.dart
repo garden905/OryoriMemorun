@@ -15,6 +15,8 @@ class _RecipeInputPageState extends State<RecipeInputPage> {
   File? _recipePhoto; // File型に変更
   String _recipeDiscription = '';
   final ImagePicker _picker = ImagePicker();
+  final List<String> _ingredients = [];
+  final TextEditingController _ingredientController = TextEditingController();
 
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
@@ -25,9 +27,25 @@ class _RecipeInputPageState extends State<RecipeInputPage> {
     }
   }
 
+  void _addIngredient() {
+    if (_ingredientController.text.isNotEmpty) {
+      setState(() {
+        _ingredients.add(_ingredientController.text);
+        _ingredientController.clear();
+      });
+    }
+  }
+
+  void _removeIngredient(int index) {
+    setState(() {
+      _ingredients.removeAt(index);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 255, 240, 209),
       appBar: AppBar(
         title: Text('レシピ入力'),
       ),
@@ -53,6 +71,29 @@ class _RecipeInputPageState extends State<RecipeInputPage> {
                   child: Text('写真を選択'),
                 ),
                 SizedBox(height: 20),
+                TextFormField(
+                  controller: _ingredientController,
+                  decoration: InputDecoration(labelText: '材料'),
+                ),
+                SizedBox(height: 8.0),
+                ElevatedButton(
+                  onPressed: _addIngredient,
+                  child: Text('材料を追加'),
+                ),
+                SizedBox(height: 16.0),
+                Text('材料リスト:'),
+                for (int i = 0; i < _ingredients.length; i++)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(_ingredients[i]),
+                      IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () => _removeIngredient(i),
+                      ),
+                    ],
+                  ),
+                SizedBox(height: 16.0),
                 TextFormField(
                   decoration: InputDecoration(labelText: 'レシピの説明'),
                   onSaved: (value) {

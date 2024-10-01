@@ -3,7 +3,6 @@ import 'recipe.dart';
 import 'recipe_detail_page.dart';
 import 'database_helper.dart';
 import 'recipe_input_page.dart';
-import 'recipe_edit_page.dart';
 import 'dart:io'; // Fileクラスをインポート
 
 class RecipeListPage extends StatefulWidget {
@@ -26,7 +25,7 @@ class _RecipeListPageState extends State<RecipeListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color.fromARGB(255, 255, 217, 136),
+        backgroundColor: const Color.fromARGB(255, 255, 240, 209),
         appBar: AppBar(
           title: Text('レシピ一覧'),
         ),
@@ -34,70 +33,75 @@ class _RecipeListPageState extends State<RecipeListPage> {
           itemCount: widget.recipes.length,
           itemBuilder: (context, index) {
             final recipe = widget.recipes[index];
-            return GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => RecipeDetailPage(recipe: recipe),
-                  ),
-                );
-              },
-              onLongPress: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('削除確認'),
-                      content: Text('このレシピを削除しますか？'),
-                      actions: <Widget>[
-                        TextButton(
-                          child: Text('キャンセル'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        TextButton(
-                          child: Text('削除'),
-                          onPressed: () {
-                            widget.onDelete(recipe.id);
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
+            return Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 3.0), // 上下に8ピクセルの隙間を追加
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RecipeDetailPage(recipe: recipe),
+                      ),
                     );
                   },
-                );
-              },
-              child: Container(
-                color: const Color.fromARGB(255, 255, 255, 255), // ここで背景色を設定
-                height: 150.0, // リストアイテムの高さを統一
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(recipe.name, style: TextStyle(fontSize: 18.0)),
+                  onLongPress: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('削除確認'),
+                          content: Text('このレシピを削除しますか？'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text('キャンセル'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            TextButton(
+                              child: Text('削除'),
+                              onPressed: () {
+                                widget.onDelete(recipe.id);
+                                Navigator.of(context).pop();
+                              },
+                            ),
                           ],
+                        );
+                      },
+                    );
+                  },
+                  child: Container(
+                    color:
+                        const Color.fromARGB(255, 255, 255, 255), // ここで背景色を設定
+                    height: 150.0, // リストアイテムの高さを統一
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 1,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(recipe.name,
+                                    style: TextStyle(fontSize: 18.0)),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
+                        Expanded(
+                          flex: 1,
+                          child: Image.file(
+                            File(recipe.photo),
+                            fit: BoxFit.cover, // 画像のフィット方法を設定
+                          ),
+                        ),
+                      ],
                     ),
-                    Expanded(
-                      flex: 1,
-                      child: Image.file(
-                        File(recipe.photo),
-                        fit: BoxFit.cover, // 画像のフィット方法を設定
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
+                  ),
+                ));
           },
         ),
         floatingActionButton: FloatingActionButton(

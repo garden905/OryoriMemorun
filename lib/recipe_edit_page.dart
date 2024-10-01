@@ -51,6 +51,7 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 255, 240, 209),
       appBar: AppBar(
         title: Text('レシピ編集'),
         actions: [
