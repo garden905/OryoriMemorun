@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart';
 import 'recipe.dart';
 import 'dart:io';
+import 'recipe_edit_page.dart';
+import 'database_helper.dart';
 
 class RecipeDetailPage extends StatelessWidget {
   final Recipe recipe;
@@ -13,6 +15,31 @@ class RecipeDetailPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(recipe.name),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RecipeEditPage(recipe: recipe),
+                ),
+              );
+
+              if (result != null) {
+                final updatedRecipe = Recipe(
+                  id: result['id'],
+                  name: result['title'],
+                  photo: result['photo'],
+                  description: result['description'],
+                );
+                final dbHelper = DatabaseHelper();
+                await dbHelper.updateRecipe(updatedRecipe);
+                // 必要に応じて状態を更新するコードを追加
+              }
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
