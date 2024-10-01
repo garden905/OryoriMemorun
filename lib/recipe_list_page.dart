@@ -26,6 +26,7 @@ class _RecipeListPageState extends State<RecipeListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: const Color.fromARGB(255, 255, 217, 136),
         appBar: AppBar(
           title: Text('レシピ一覧'),
         ),
@@ -68,34 +69,32 @@ class _RecipeListPageState extends State<RecipeListPage> {
                   },
                 );
               },
-              child: ListTile(
-                title: Text(recipe.name),
-                trailing:
-                    Image.file(File(recipe.photo)), // trailingを使用して画像を右側に表示
-                leading: IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => RecipeEditPage(recipe: recipe),
+              child: Container(
+                color: const Color.fromARGB(255, 255, 255, 255), // ここで背景色を設定
+                height: 150.0, // リストアイテムの高さを統一
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(recipe.name, style: TextStyle(fontSize: 18.0)),
+                          ],
+                        ),
                       ),
-                    );
-
-                    if (result != null) {
-                      final updatedRecipe = Recipe(
-                        id: result['id'],
-                        name: result['title'],
-                        photo: result['photo'],
-                        description: result['description'],
-                      );
-                      final dbHelper = DatabaseHelper();
-                      await dbHelper.updateRecipe(updatedRecipe);
-                      setState(() {
-                        widget.recipes[index] = updatedRecipe;
-                      });
-                    }
-                  },
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Image.file(
+                        File(recipe.photo),
+                        fit: BoxFit.cover, // 画像のフィット方法を設定
+                      ),
+                    ),
+                  ],
                 ),
               ),
             );
