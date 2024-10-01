@@ -60,6 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 255, 217, 136),
       body: IndexedStack(
         index: _selectedIndex,
         children: [
