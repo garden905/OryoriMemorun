@@ -5,7 +5,10 @@ import 'recipe_list_page.dart';
 import 'recipe_detail_page.dart';
 import 'dart:io';
 
-void main() {
+void main() async {
+  // final dbHelper = DatabaseHelper();
+  // WidgetsFlutterBinding.ensureInitialized();
+  // await dbHelper.deleteDatabaseFile(); // データベースを削除
   runApp(MyApp());
 }
 

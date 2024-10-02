@@ -4,7 +4,7 @@ import 'recipe.dart';
 
 class DatabaseHelper {
   static final _databaseName = "MyDatabase.db";
-  static final _databaseVersion = 3; // バージョンを更新
+  static final _databaseVersion = 4; // バージョンを更新
 
   static final table = 'recipes';
 
@@ -12,6 +12,7 @@ class DatabaseHelper {
   static final columnName = 'name';
   static final columnPhoto = 'photo'; // photoカラムを追加
   static final columnDescription = 'description';
+  static final columnIngredients = 'ingredients'; // ingredientsカラムを追加
   static final columnIsFavorite = 'isFavorite';
 
   // 無名コンストラクタの追加
@@ -41,6 +42,7 @@ class DatabaseHelper {
         "$columnName TEXT NOT NULL, "
         "$columnPhoto BLOB NOT NULL, "
         "$columnDescription TEXT NOT NULL,"
+        "$columnIngredients TEXT NOT NULL DEFAULT ''," // ingredientsカラムを追加
         "$columnIsFavorite INTEGER NOT NULL DEFAULT 0)"); // isFavoriteカラムを追加);
   }
 
@@ -54,6 +56,11 @@ class DatabaseHelper {
       await db.execute('''
       ALTER TABLE $table ADD COLUMN $columnIsFavorite INTEGER NOT NULL DEFAULT 0
     '''); // isFavoriteカラムを追加
+    }
+    if (oldVersion < 4) {
+      await db.execute('''
+      ALTER TABLE $table ADD COLUMN $columnIngredients TEXT NOT NULL DEFAULT ''
+    '''); // ingredientsカラムを追加
     }
   }
 
@@ -90,5 +97,10 @@ class DatabaseHelper {
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  Future<void> deleteDatabaseFile() async {
+    String path = join(await getDatabasesPath(), 'MyDatabase.db');
+    await deleteDatabase(path);
   }
 }

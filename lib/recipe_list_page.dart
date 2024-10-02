@@ -137,6 +137,9 @@ class _RecipeListPageState extends State<RecipeListPage> {
                 name: result['title'],
                 photo: result['photo'],
                 description: result['description'],
+                ingredients: result['ingredients'] != null
+                    ? List<String>.from(result['ingredients'])
+                    : [], // nullの場合は空のリストに初期化
               );
               final dbHelper = DatabaseHelper();
               await dbHelper.insertRecipe(newRecipe);

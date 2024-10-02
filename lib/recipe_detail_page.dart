@@ -33,6 +33,7 @@ class RecipeDetailPage extends StatelessWidget {
                   name: result['title'],
                   photo: result['photo'],
                   description: result['description'],
+                  ingredients: result['ingredients'],
                 );
                 final dbHelper = DatabaseHelper();
                 await dbHelper.updateRecipe(updatedRecipe);
@@ -53,6 +54,22 @@ class RecipeDetailPage extends StatelessWidget {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               Image.file(File(recipe.photo)),
+              SizedBox(height: 16),
+              Text(
+                '材料',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              ListView.builder(
+                shrinkWrap: true, // ListViewの高さを内容に合わせる
+                physics: NeverScrollableScrollPhysics(), // スクロールを無効にする
+                itemCount: recipe.ingredients.length,
+                itemBuilder: (context, index) {
+                  return Text(
+                    recipe.ingredients[index],
+                    style: TextStyle(fontSize: 16),
+                  );
+                },
+              ),
               SizedBox(height: 16),
               Text(recipe.description),
               // Add more details as needed

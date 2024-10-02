@@ -28,9 +28,10 @@ class _RecipeInputPageState extends State<RecipeInputPage> {
   }
 
   void _addIngredient() {
-    if (_ingredientController.text.isNotEmpty) {
+    final ingredient = _ingredientController.text;
+    if (ingredient.isNotEmpty) {
       setState(() {
-        _ingredients.add(_ingredientController.text);
+        _ingredients.add(ingredient);
         _ingredientController.clear();
       });
     }
@@ -108,6 +109,7 @@ class _RecipeInputPageState extends State<RecipeInputPage> {
                         'title': _recipeTitle,
                         'photo': _recipePhoto?.path,
                         'description': _recipeDiscription,
+                        'ingredients': _ingredients,
                       });
                     }
                   },
