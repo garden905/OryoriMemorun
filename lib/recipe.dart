@@ -36,8 +36,9 @@ class Recipe {
       name: map['name'],
       photo: map['photo'],
       description: map['description'],
-      ingredients: List<Map<String, String>>.from(
-          jsonDecode(map['ingredients'])), // JSON文字列からリストに変換
+      ingredients: (jsonDecode(map['ingredients']) as List)
+          .map((item) => Map<String, String>.from(item))
+          .toList(), // JSON文字列からリストに変換
       isFavorite: map['isFavorite'] != null
           ? map['isFavorite'] == 1
           : false, // nullチェックを追加

@@ -113,6 +113,10 @@ class _RecipeInputPageState extends State<RecipeInputPage> {
                     return ListTile(
                       title: Text(
                           '${ingredient['ingredient']} (${ingredient['quantity']})'),
+                      trailing: IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () => _removeIngredient(index),
+                      ),
                     );
                   },
                 ),
