@@ -3,6 +3,7 @@ import 'recipe.dart';
 import 'database_helper.dart';
 import 'recipe_list_page.dart';
 import 'recipe_detail_page.dart';
+import 'dart:io';
 
 void main() {
   runApp(MyApp());
@@ -25,7 +26,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   List<Recipe> _recipes = [];
-  List<Recipe> _favoriteRecipes = [];
 
   @override
   void initState() {
@@ -38,7 +38,6 @@ class _MyHomePageState extends State<MyHomePage> {
     final recipes = await dbHelper.queryAllRecipes();
     setState(() {
       _recipes = recipes;
-      _favoriteRecipes = recipes.where((recipe) => recipe.isFavorite).toList();
     });
   }
 
@@ -128,26 +127,64 @@ class _HomePageState extends State<HomePage> {
         itemCount: favoriteRecipes.length,
         itemBuilder: (context, index) {
           final recipe = favoriteRecipes[index];
-          return ListTile(
-            //leading: Image.memory(recipe.photo), // 写真を表示
-            title: Text(recipe.name),
-            subtitle: Text(recipe.description),
-            trailing: Icon(
-              recipe.isFavorite ? Icons.favorite : Icons.favorite_border,
-              color: recipe.isFavorite ? Colors.red : null,
-            ),
-            onTap: () async {
-              final result = await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => RecipeDetailPage(recipe: recipe),
+          return Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 3.0), // 上下に8ピクセルの隙間を追加
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RecipeDetailPage(recipe: recipe),
+                    ),
+                  );
+                },
+                child: Container(
+                  color: const Color.fromARGB(255, 255, 255, 255), // ここで背景色を設定
+                  height: 150.0, // リストアイテムの高さを統一
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(recipe.name,
+                                  style: TextStyle(fontSize: 18.0)),
+                              IconButton(
+                                icon: Icon(
+                                  recipe.isFavorite
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  color: recipe.isFavorite ? Colors.red : null,
+                                ),
+                                onPressed: () async {
+                                  setState(() {
+                                    recipe.isFavorite = !recipe.isFavorite;
+                                  });
+                                  final dbHelper = DatabaseHelper();
+                                  await dbHelper.updateFavoriteStatus(
+                                      recipe.id, recipe.isFavorite);
+                                },
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Image.file(
+                          File(recipe.photo),
+                          fit: BoxFit.cover, // 画像のフィット方法を設定
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              );
-              if (result == true) {
-                _loadFavoriteRecipes(); // 詳細ページから戻ったときにお気に入りレシピを再読み込み
-              }
-            },
-          );
+              ));
         },
       ),
     );
