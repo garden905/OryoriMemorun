@@ -15,8 +15,9 @@ class _RecipeInputPageState extends State<RecipeInputPage> {
   File? _recipePhoto; // File型に変更
   String _recipeDiscription = '';
   final ImagePicker _picker = ImagePicker();
-  final List<String> _ingredients = [];
+  List<Map<String, String>> _ingredients = []; // 材料と個数のリスト
   final TextEditingController _ingredientController = TextEditingController();
+  final _quantityController = TextEditingController(); // 個数入力用のコントローラ
 
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
@@ -29,10 +30,12 @@ class _RecipeInputPageState extends State<RecipeInputPage> {
 
   void _addIngredient() {
     final ingredient = _ingredientController.text;
-    if (ingredient.isNotEmpty) {
+    final quantity = _quantityController.text;
+    if (ingredient.isNotEmpty && quantity.isNotEmpty) {
       setState(() {
-        _ingredients.add(ingredient);
+        _ingredients.add({'ingredient': ingredient, 'quantity': quantity});
         _ingredientController.clear();
+        _quantityController.clear();
       });
     }
   }
@@ -72,28 +75,47 @@ class _RecipeInputPageState extends State<RecipeInputPage> {
                   child: Text('写真を選択'),
                 ),
                 SizedBox(height: 20),
-                TextFormField(
-                  controller: _ingredientController,
-                  decoration: InputDecoration(labelText: '材料'),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _ingredientController,
+                        decoration: InputDecoration(labelText: '材料'),
+                        onSubmitted: (_) => _addIngredient(),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Container(
+                      width: 100,
+                      child: TextField(
+                        controller: _quantityController,
+                        decoration: InputDecoration(labelText: '個数'),
+                        onSubmitted: (_) => _addIngredient(),
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(height: 8.0),
                 ElevatedButton(
                   onPressed: _addIngredient,
                   child: Text('材料を追加'),
                 ),
-                SizedBox(height: 16.0),
-                Text('材料リスト:'),
-                for (int i = 0; i < _ingredients.length; i++)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(_ingredients[i]),
-                      IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () => _removeIngredient(i),
-                      ),
-                    ],
-                  ),
+                SizedBox(height: 16),
+                Text(
+                  '材料リスト',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: _ingredients.length,
+                  itemBuilder: (context, index) {
+                    final ingredient = _ingredients[index];
+                    return ListTile(
+                      title: Text(
+                          '${ingredient['ingredient']} (${ingredient['quantity']})'),
+                    );
+                  },
+                ),
                 SizedBox(height: 16.0),
                 TextFormField(
                   decoration: InputDecoration(labelText: 'レシピの説明'),

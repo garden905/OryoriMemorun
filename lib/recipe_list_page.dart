@@ -138,7 +138,7 @@ class _RecipeListPageState extends State<RecipeListPage> {
                 photo: result['photo'],
                 description: result['description'],
                 ingredients: result['ingredients'] != null
-                    ? List<String>.from(result['ingredients'])
+                    ? List<Map<String, String>>.from(result['ingredients'])
                     : [], // nullの場合は空のリストに初期化
               );
               final dbHelper = DatabaseHelper();

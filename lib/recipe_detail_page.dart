@@ -64,8 +64,9 @@ class RecipeDetailPage extends StatelessWidget {
                 physics: NeverScrollableScrollPhysics(), // スクロールを無効にする
                 itemCount: recipe.ingredients.length,
                 itemBuilder: (context, index) {
+                  final ingredient = recipe.ingredients[index];
                   return Text(
-                    recipe.ingredients[index],
+                    '${ingredient['ingredient']} (${ingredient['quantity']})',
                     style: TextStyle(fontSize: 16),
                   );
                 },

@@ -1,9 +1,11 @@
+import 'dart:convert';
+
 class Recipe {
   final int id;
   final String name;
   final String photo;
   final String description;
-  final List<String> ingredients; // 材料リストを追加
+  final List<Map<String, String>> ingredients; // 材料と個数のリスト
   bool isFavorite; // お気に入りフラグ
 
   Recipe({
@@ -22,7 +24,7 @@ class Recipe {
       'name': name,
       'photo': photo,
       'description': description,
-      'ingredients': ingredients.join(','), // カンマ区切りの文字列に変換
+      'ingredients': jsonEncode(ingredients), // JSON文字列に変換
       'isFavorite': isFavorite ? 1 : 0, // SQLiteではboolをintで保存
     };
   }
@@ -34,7 +36,8 @@ class Recipe {
       name: map['name'],
       photo: map['photo'],
       description: map['description'],
-      ingredients: map['ingredients'].split(','), // カンマ区切りの文字列からリストに変換
+      ingredients: List<Map<String, String>>.from(
+          jsonDecode(map['ingredients'])), // JSON文字列からリストに変換
       isFavorite: map['isFavorite'] != null
           ? map['isFavorite'] == 1
           : false, // nullチェックを追加
