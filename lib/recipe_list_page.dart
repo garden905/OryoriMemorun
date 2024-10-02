@@ -87,6 +87,23 @@ class _RecipeListPageState extends State<RecipeListPage> {
                               children: [
                                 Text(recipe.name,
                                     style: TextStyle(fontSize: 18.0)),
+                                IconButton(
+                                  icon: Icon(
+                                    recipe.isFavorite
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color:
+                                        recipe.isFavorite ? Colors.red : null,
+                                  ),
+                                  onPressed: () async {
+                                    setState(() {
+                                      recipe.isFavorite = !recipe.isFavorite;
+                                    });
+                                    final dbHelper = DatabaseHelper();
+                                    await dbHelper.updateFavoriteStatus(
+                                        recipe.id, recipe.isFavorite);
+                                  },
+                                )
                               ],
                             ),
                           ),

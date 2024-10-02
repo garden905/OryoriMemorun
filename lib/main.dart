@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'recipe.dart';
 import 'database_helper.dart';
 import 'recipe_list_page.dart';
+import 'recipe_detail_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -24,6 +25,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   List<Recipe> _recipes = [];
+  List<Recipe> _favoriteRecipes = [];
 
   @override
   void initState() {
@@ -36,12 +38,14 @@ class _MyHomePageState extends State<MyHomePage> {
     final recipes = await dbHelper.queryAllRecipes();
     setState(() {
       _recipes = recipes;
+      _favoriteRecipes = recipes.where((recipe) => recipe.isFavorite).toList();
     });
   }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      _loadRecipes(); // ページが変更されたときにデータを更新
     });
   }
 
@@ -88,13 +92,63 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  List<Recipe> favoriteRecipes = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavoriteRecipes();
+  }
+
+  Future<void> _loadFavoriteRecipes() async {
+    final dbHelper = DatabaseHelper.instance;
+    final allRecipes = await dbHelper.queryAllRecipes();
+    setState(() {
+      favoriteRecipes =
+          allRecipes.where((recipe) => recipe.isFavorite).toList();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('ホームページ'),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('お気に入りのレシピ'),
+      ),
+      body: ListView.builder(
+        itemCount: favoriteRecipes.length,
+        itemBuilder: (context, index) {
+          final recipe = favoriteRecipes[index];
+          return ListTile(
+            //leading: Image.memory(recipe.photo), // 写真を表示
+            title: Text(recipe.name),
+            subtitle: Text(recipe.description),
+            trailing: Icon(
+              recipe.isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: recipe.isFavorite ? Colors.red : null,
+            ),
+            onTap: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RecipeDetailPage(recipe: recipe),
+                ),
+              );
+              if (result == true) {
+                _loadFavoriteRecipes(); // 詳細ページから戻ったときにお気に入りレシピを再読み込み
+              }
+            },
+          );
+        },
+      ),
     );
   }
 }

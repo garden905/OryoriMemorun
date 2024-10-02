@@ -4,7 +4,7 @@ import 'recipe.dart';
 
 class DatabaseHelper {
   static final _databaseName = "MyDatabase.db";
-  static final _databaseVersion = 2; // バージョンを更新
+  static final _databaseVersion = 3; // バージョンを更新
 
   static final table = 'recipes';
 
@@ -12,6 +12,7 @@ class DatabaseHelper {
   static final columnName = 'name';
   static final columnPhoto = 'photo'; // photoカラムを追加
   static final columnDescription = 'description';
+  static final columnIsFavorite = 'isFavorite';
 
   // 無名コンストラクタの追加
   DatabaseHelper();
@@ -39,7 +40,8 @@ class DatabaseHelper {
         "$columnId INTEGER PRIMARY KEY, "
         "$columnName TEXT NOT NULL, "
         "$columnPhoto BLOB NOT NULL, "
-        "$columnDescription TEXT NOT NULL)");
+        "$columnDescription TEXT NOT NULL,"
+        "$columnIsFavorite INTEGER NOT NULL DEFAULT 0)"); // isFavoriteカラムを追加);
   }
 
   Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -47,6 +49,11 @@ class DatabaseHelper {
       await db.execute('''
         ALTER TABLE $table ADD COLUMN $columnPhoto BLOB NOT NULL DEFAULT ''
       ''');
+    }
+    if (oldVersion < 3) {
+      await db.execute('''
+      ALTER TABLE $table ADD COLUMN $columnIsFavorite INTEGER NOT NULL DEFAULT 0
+    '''); // isFavoriteカラムを追加
     }
   }
 
@@ -73,5 +80,15 @@ class DatabaseHelper {
   Future<void> clearTable() async {
     final db = await database;
     await db.execute('DELETE FROM example');
+  }
+
+  Future<void> updateFavoriteStatus(int id, bool isFavorite) async {
+    Database db = await database;
+    await db.update(
+      table,
+      {'isFavorite': isFavorite ? 1 : 0},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 }
