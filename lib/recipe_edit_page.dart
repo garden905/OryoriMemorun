@@ -18,6 +18,8 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
   late String _recipeDescription;
   File? _recipePhoto;
   final ImagePicker _picker = ImagePicker();
+  List<Map<String, dynamic>> _ingredients = [];
+  List<String> _steps = [];
 
   @override
   void initState() {
@@ -25,6 +27,8 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
     _recipeTitle = widget.recipe.name;
     _recipeDescription = widget.recipe.description;
     _recipePhoto = File(widget.recipe.photo);
+    _ingredients = widget.recipe.ingredients; // ここで材料リストを初期化
+    _steps = widget.recipe.steps; // ここでステップリストを初期化
   }
 
   Future<void> _pickImage() async {
@@ -44,8 +48,34 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
         'title': _recipeTitle,
         'photo': _recipePhoto?.path,
         'description': _recipeDescription,
+        'ingredients': _ingredients,
+        'steps': _steps,
       });
     }
+  }
+
+  void _addIngredient() {
+    setState(() {
+      _ingredients.add({'name': '', 'quantity': ''});
+    });
+  }
+
+  void _removeIngredient(int index) {
+    setState(() {
+      _ingredients.removeAt(index);
+    });
+  }
+
+  void _addStep() {
+    setState(() {
+      _steps.add('');
+    });
+  }
+
+  void _removeStep(int index) {
+    setState(() {
+      _steps.removeAt(index);
+    });
   }
 
   @override
@@ -74,6 +104,80 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
                   onSaved: (value) {
                     _recipeTitle = value!;
                   },
+                ),
+                SizedBox(height: 16),
+                Text('材料',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _ingredients.length,
+                  itemBuilder: (context, index) {
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            initialValue: _ingredients[index]['name'],
+                            decoration: InputDecoration(labelText: '材料名'),
+                            onSaved: (value) {
+                              _ingredients[index]['name'] = value!;
+                            },
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: TextFormField(
+                            initialValue: _ingredients[index]['quantity'],
+                            decoration: InputDecoration(labelText: '個数'),
+                            onSaved: (value) {
+                              _ingredients[index]['quantity'] = value!;
+                            },
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () => _removeIngredient(index),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _addIngredient,
+                  child: Text('材料を追加'),
+                ),
+                SizedBox(height: 16),
+                Text('手順',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _steps.length,
+                  itemBuilder: (context, index) {
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            initialValue: _steps[index],
+                            decoration: InputDecoration(labelText: '手順'),
+                            onSaved: (value) {
+                              _steps[index] = value!;
+                            },
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () => _removeStep(index),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: _addStep,
+                  child: Text('手順を追加'),
                 ),
                 TextFormField(
                   initialValue: _recipeDescription,
