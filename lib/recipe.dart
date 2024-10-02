@@ -6,6 +6,7 @@ class Recipe {
   final String photo;
   final String description;
   final List<Map<String, String>> ingredients; // 材料と個数のリスト
+  final List<String> steps; // 作り方のリストを追加
   bool isFavorite; // お気に入りフラグ
 
   Recipe({
@@ -14,6 +15,7 @@ class Recipe {
     required this.photo,
     required this.description,
     required this.ingredients, // コンストラクタに追加
+    this.steps = const [], // デフォルト値を設定
     this.isFavorite = false, // デフォルトはfalse
   });
 
@@ -25,6 +27,7 @@ class Recipe {
       'photo': photo,
       'description': description,
       'ingredients': jsonEncode(ingredients), // JSON文字列に変換
+      'steps': jsonEncode(steps), // リストをJSON文字列に変換
       'isFavorite': isFavorite ? 1 : 0, // SQLiteではboolをintで保存
     };
   }
@@ -36,9 +39,13 @@ class Recipe {
       name: map['name'],
       photo: map['photo'],
       description: map['description'],
+
       ingredients: (jsonDecode(map['ingredients']) as List)
           .map((item) => Map<String, String>.from(item))
           .toList(), // JSON文字列からリストに変換
+      steps: map['steps'] != null
+          ? List<String>.from(jsonDecode(map['steps']))
+          : [], // nullの場合は空のリストに初期化
       isFavorite: map['isFavorite'] != null
           ? map['isFavorite'] == 1
           : false, // nullチェックを追加

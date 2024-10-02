@@ -34,6 +34,7 @@ class RecipeDetailPage extends StatelessWidget {
                   photo: result['photo'],
                   description: result['description'],
                   ingredients: result['ingredients'],
+                  steps: result['steps'],
                 );
                 final dbHelper = DatabaseHelper();
                 await dbHelper.updateRecipe(updatedRecipe);
@@ -60,14 +61,34 @@ class RecipeDetailPage extends StatelessWidget {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               ListView.builder(
-                shrinkWrap: true, // ListViewの高さを内容に合わせる
-                physics: NeverScrollableScrollPhysics(), // スクロールを無効にする
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
                 itemCount: recipe.ingredients.length,
                 itemBuilder: (context, index) {
                   final ingredient = recipe.ingredients[index];
                   return Text(
                     '${ingredient['ingredient']} (${ingredient['quantity']})',
                     style: TextStyle(fontSize: 16),
+                  );
+                },
+              ),
+              SizedBox(height: 16),
+              Text(
+                '作り方',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: recipe.steps.length,
+                itemBuilder: (context, index) {
+                  final step = recipe.steps[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: Text(
+                      '${index + 1}. $step',
+                      style: TextStyle(fontSize: 16),
+                    ),
                   );
                 },
               ),

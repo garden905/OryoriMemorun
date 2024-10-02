@@ -140,6 +140,9 @@ class _RecipeListPageState extends State<RecipeListPage> {
                 ingredients: result['ingredients'] != null
                     ? List<Map<String, String>>.from(result['ingredients'])
                     : [], // nullの場合は空のリストに初期化
+                steps: result['steps'] != null
+                    ? List<String>.from(result['steps'])
+                    : [], // nullの場合は空のリストに初期化
               );
               final dbHelper = DatabaseHelper();
               await dbHelper.insertRecipe(newRecipe);

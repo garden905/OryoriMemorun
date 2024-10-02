@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:flutter_reorderable_list/flutter_reorderable_list.dart';
 
 class RecipeInputPage extends StatefulWidget {
   const RecipeInputPage({Key? key}) : super(key: key); // keyパラメータを追加
@@ -19,7 +18,8 @@ class _RecipeInputPageState extends State<RecipeInputPage> {
   List<Map<String, String>> _ingredients = []; // 材料と個数のリスト
   final TextEditingController _ingredientController = TextEditingController();
   final _quantityController = TextEditingController(); // 個数入力用のコントローラ
-  List<String> _steps = ['']; // 初期状態で1つの空のステップを追加
+  List<String> _steps = []; // 初期状態で1つの空のステップを追加
+  final _stepController = TextEditingController(); // ステップ入力用のコントローラ
 
   Future<void> _pickImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
@@ -49,14 +49,15 @@ class _RecipeInputPageState extends State<RecipeInputPage> {
   }
 
   void _addStep() {
-    // すべてのステップが空でないことを確認
-    if (_steps.every((step) => step.isNotEmpty)) {
+    final step = _stepController.text;
+    if (step.isNotEmpty) {
       setState(() {
-        _steps.add('');
+        _steps.add(step);
+        _stepController.clear();
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('全ての作り方を入力してください')),
+        const SnackBar(content: Text('作り方を入力してください')),
       );
     }
   }
@@ -158,49 +159,28 @@ class _RecipeInputPageState extends State<RecipeInputPage> {
                   },
                 ),
                 SizedBox(height: 16.0),
-                Text(
-                  '作り方',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 16.0),
-                Container(
-                  height: 400, // 必要に応じて高さを調整
-                  child: ReorderableListView(
-                    onReorder: _onReorder,
-                    children: List.generate(
-                      _steps.length,
-                      (index) {
-                        return ListTile(
-                          key: ValueKey(_steps[index]),
-                          title: Row(
-                            children: [
-                              Text('${index + 1}. '),
-                              Expanded(
-                                child: TextFormField(
-                                  initialValue: _steps[index],
-                                  onChanged: (value) {
-                                    _steps[index] = value;
-                                  },
-                                ),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.delete),
-                                onPressed: () => _removeStep(index),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.drag_handle),
-                                onPressed: () {}, // ドラッグハンドルとして機能
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                TextField(
+                  controller: _stepController,
+                  decoration: InputDecoration(labelText: '作り方'),
                 ),
                 ElevatedButton(
                   onPressed: _addStep,
-                  child: const Text('作り方を追加'),
+                  child: Text('作り方を追加'),
+                ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: _steps.length,
+                  itemBuilder: (context, index) {
+                    final step = _steps[index];
+                    return ListTile(
+                      title: Text('${index + 1}. $step'),
+                      trailing: IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () => _removeStep(index),
+                      ),
+                    );
+                  },
                 ),
                 SizedBox(height: 16.0),
                 TextFormField(
@@ -219,6 +199,7 @@ class _RecipeInputPageState extends State<RecipeInputPage> {
                         'photo': _recipePhoto?.path,
                         'description': _recipeDiscription,
                         'ingredients': _ingredients,
+                        'steps': _steps,
                       });
                     }
                   },
