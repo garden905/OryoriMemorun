@@ -112,6 +112,14 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
                     _recipeTitle = value!;
                   },
                 ),
+                SizedBox(height: 16.0),
+                _recipePhoto != null
+                    ? Image.file(_recipePhoto!)
+                    : Text('写真が選択されていません'),
+                ElevatedButton(
+                  onPressed: _pickImage,
+                  child: Text('写真を選択'),
+                ),
                 SizedBox(height: 16),
                 Text('材料',
                     style:
@@ -192,14 +200,6 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
                   onSaved: (value) {
                     _recipeDescription = value!;
                   },
-                ),
-                SizedBox(height: 16.0),
-                _recipePhoto != null
-                    ? Image.file(_recipePhoto!)
-                    : Text('写真が選択されていません'),
-                ElevatedButton(
-                  onPressed: _pickImage,
-                  child: Text('写真を選択'),
                 ),
               ],
             ),
