@@ -11,6 +11,7 @@ class RecipeInputPage extends StatefulWidget {
 
 class _RecipeInputPageState extends State<RecipeInputPage> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _titleController = TextEditingController();
   String _recipeTitle = '';
   File? _recipePhoto; // File型に変更
   String _recipeDiscription = '';
@@ -82,6 +83,25 @@ class _RecipeInputPageState extends State<RecipeInputPage> {
       final item = _steps.removeAt(oldIndex);
       _steps.insert(newIndex, item);
     });
+  }
+
+  bool _submitRecipe() {
+    if (_recipePhoto == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('写真を追加してください')),
+      );
+      return false;
+    }
+
+    if (_steps.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('作り方を入力してください')),
+      );
+      return false;
+    }
+
+    // 条件を満たす場合は true を返す
+    return true;
   }
 
   @override
@@ -192,15 +212,17 @@ class _RecipeInputPageState extends State<RecipeInputPage> {
                 SizedBox(height: 16.0),
                 ElevatedButton(
                   onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-                      Navigator.pop(context, {
-                        'title': _recipeTitle,
-                        'photo': _recipePhoto?.path,
-                        'description': _recipeDiscription,
-                        'ingredients': _ingredients,
-                        'steps': _steps,
-                      });
+                    if (_submitRecipe()) {
+                      if (_formKey.currentState!.validate()) {
+                        _formKey.currentState!.save();
+                        Navigator.pop(context, {
+                          'title': _recipeTitle,
+                          'photo': _recipePhoto?.path,
+                          'description': _recipeDiscription,
+                          'ingredients': _ingredients,
+                          'steps': _steps,
+                        });
+                      }
                     }
                   },
                   child: Text('投稿'),
