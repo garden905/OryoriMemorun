@@ -63,7 +63,7 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
 
   void _addIngredient() {
     setState(() {
-      _ingredients.add({'name': '', 'quantity': ''});
+      _ingredients.add({'ingredient': '', 'quantity': ''});
     });
   }
 
@@ -132,10 +132,12 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
                       children: [
                         Expanded(
                           child: TextFormField(
-                            initialValue: _ingredients[index]['name'],
+                            initialValue: _ingredients[index]['ingredient'],
                             decoration: InputDecoration(labelText: '材料名'),
-                            onSaved: (value) {
-                              _ingredients[index]['name'] = value!;
+                            onChanged: (value) {
+                              setState(() {
+                                _ingredients[index]['ingredient'] = value;
+                              });
                             },
                           ),
                         ),
@@ -144,8 +146,12 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
                           child: TextFormField(
                             initialValue: _ingredients[index]['quantity'],
                             decoration: InputDecoration(labelText: '個数'),
-                            onSaved: (value) {
-                              _ingredients[index]['quantity'] = value!;
+                            onChanged: (value) {
+                              setState(
+                                () {
+                                  _ingredients[index]['quantity'] = value;
+                                },
+                              );
                             },
                           ),
                         ),

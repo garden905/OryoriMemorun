@@ -11,7 +11,6 @@ class RecipeInputPage extends StatefulWidget {
 
 class _RecipeInputPageState extends State<RecipeInputPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _titleController = TextEditingController();
   String _recipeTitle = '';
   File? _recipePhoto; // File型に変更
   String _recipeDiscription = '';
