@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'recipe.dart';
+import 'database_helper.dart';
 
 class RecipeEditPage extends StatefulWidget {
   final Recipe recipe;
@@ -18,7 +19,7 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
   late String _recipeDescription;
   File? _recipePhoto;
   final ImagePicker _picker = ImagePicker();
-  List<Map<String, dynamic>> _ingredients = [];
+  List<Map<String, String>> _ingredients = [];
   List<String> _steps = [];
 
   @override
@@ -27,7 +28,8 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
     _recipeTitle = widget.recipe.name;
     _recipeDescription = widget.recipe.description;
     _recipePhoto = File(widget.recipe.photo);
-    _ingredients = widget.recipe.ingredients; // ここで材料リストを初期化
+    _ingredients =
+        widget.recipe.ingredients.cast<Map<String, String>>(); // ここで材料リストを初期化
     _steps = widget.recipe.steps; // ここでステップリストを初期化
   }
 
@@ -40,17 +42,22 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
     }
   }
 
-  void _saveRecipe() {
+  void _saveRecipe() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      Navigator.pop(context, {
-        'id': widget.recipe.id,
-        'title': _recipeTitle,
-        'photo': _recipePhoto?.path,
-        'description': _recipeDescription,
-        'ingredients': _ingredients,
-        'steps': _steps,
-      });
+
+      final updatedRecipe = Recipe(
+        id: widget.recipe.id,
+        name: _recipeTitle,
+        photo: _recipePhoto?.path ?? '',
+        description: _recipeDescription,
+        ingredients: _ingredients,
+        steps: _steps,
+      );
+
+      await DatabaseHelper().updateRecipe(updatedRecipe);
+
+      Navigator.pop(context, updatedRecipe);
     }
   }
 

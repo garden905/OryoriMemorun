@@ -5,12 +5,39 @@ import 'dart:io';
 import 'recipe_edit_page.dart';
 import 'database_helper.dart';
 
-class RecipeDetailPage extends StatelessWidget {
+class RecipeDetailPage extends StatefulWidget {
   final Recipe recipe;
 
-  const RecipeDetailPage({Key? key, required this.recipe}) : super(key: key);
+  RecipeDetailPage({required this.recipe});
 
   @override
+  _RecipeDetailPageState createState() => _RecipeDetailPageState();
+}
+
+class _RecipeDetailPageState extends State<RecipeDetailPage> {
+  late Recipe recipe;
+
+  @override
+  void initState() {
+    super.initState();
+    recipe = widget.recipe;
+  }
+
+  Future<void> _editRecipe() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RecipeEditPage(recipe: recipe),
+      ),
+    );
+
+    if (result != null) {
+      setState(() {
+        recipe = result;
+      });
+    }
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 240, 209),
@@ -27,18 +54,13 @@ class RecipeDetailPage extends StatelessWidget {
                 ),
               );
 
-              if (result != null) {
-                final updatedRecipe = Recipe(
-                  id: result['id'],
-                  name: result['title'],
-                  photo: result['photo'],
-                  description: result['description'],
-                  ingredients: result['ingredients'],
-                  steps: result['steps'],
-                );
+              if (result != null && result is Recipe) {
+                final updatedRecipe = result;
                 final dbHelper = DatabaseHelper();
                 await dbHelper.updateRecipe(updatedRecipe);
-                // 必要に応じて状態を更新するコードを追加
+                setState(() {
+                  recipe = updatedRecipe;
+                });
               }
             },
           ),
