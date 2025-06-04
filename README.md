@@ -22,12 +22,14 @@
 
 レシピ一覧からレシピの詳細ページに飛ぶことができます
 ここではメモしたレシピの詳しい情報を見ることができます
+
 <img width="200" alt="Simulator Screenshot - iPhone 15 Pro Max - 2024-10-03 at 14.25.06.png (2.3 MB)" src="https://img.esa.io/uploads/production/attachments/21530/2024/10/09/104214/1530841b-d52f-44af-879b-078a03410571.png"><img width="200" alt="Simulator Screenshot - iPhone 15 Pro Max - 2024-10-03 at 14.27.25.png (626.6 kB)" src="https://img.esa.io/uploads/production/attachments/21530/2024/10/09/104214/7d20f9e5-706b-41e6-906a-02978095ea59.png">
 
 ### メモしたレシピを編集
 
 レシピの詳細ページ右上のアイコンを押すとレシピ編集ページに飛ぶことができます
 ここではメモしたレシピを編集することができます
+
 <img width="200" alt="Simulator Screenshot - iPhone 15 Pro Max - 2024-10-03 at 14.30.12.png (2.5 MB)" src="https://img.esa.io/uploads/production/attachments/21530/2024/10/09/104214/daed6ba0-035c-4dd1-a75b-8dffa9f84234.png">
 
 ## 作った感想
