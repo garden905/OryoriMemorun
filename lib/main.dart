@@ -6,9 +6,6 @@ import 'recipe_detail_page.dart';
 import 'dart:io';
 
 void main() async {
-  // final dbHelper = DatabaseHelper();
-  // WidgetsFlutterBinding.ensureInitialized();
-  // await dbHelper.deleteDatabaseFile(); // データベースを削除
   runApp(MyApp());
 }
 
@@ -102,8 +99,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Recipe> favoriteRecipes = [];
-
+  List<int> _favoriteRecipeIds = [];
+  List<Recipe> favoriteRecipes = []; // ここにお気に入りのレシピを格納
   @override
   void initState() {
     super.initState();
@@ -116,6 +113,16 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       favoriteRecipes =
           allRecipes.where((recipe) => recipe.isFavorite).toList();
+    });
+  }
+
+  void _toggleFavorite(int recipeId) {
+    setState(() {
+      if (_favoriteRecipeIds.contains(recipeId)) {
+        _favoriteRecipeIds.remove(recipeId);
+      } else {
+        _favoriteRecipeIds.add(recipeId);
+      }
     });
   }
 
@@ -171,6 +178,7 @@ class _HomePageState extends State<HomePage> {
                                   final dbHelper = DatabaseHelper();
                                   await dbHelper.updateFavoriteStatus(
                                       recipe.id, recipe.isFavorite);
+                                  _toggleFavorite(recipe.id);
                                 },
                               )
                             ],
